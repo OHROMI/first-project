@@ -1,0 +1,83 @@
+import streamlit as st
+import pandas as pd
+import os
+
+st.set_page_config(page_title="MBTI 비교 서비스 🐾", page_icon="🦊")
+
+# 경로 설정
+DATA_DIR = "data"
+os.makedirs(DATA_DIR, exist_ok=True)
+
+# 페이지 선택
+page = st.sidebar.radio("페이지 이동", ["나의 MBTI 입력", "친구가 보는 MBTI 입력", "결과 보기"])
+
+# 🧍‍♀️ Step 1: 내가 보는 나의 MBTI 입력
+if page == "나의 MBTI 입력":
+    st.title("🧠 내가 생각하는 나의 MBTI")
+    name = st.text_input("당신의 이름을 입력하세요 (예: sujin)")
+    my_mbti = st.selectbox("당신이 생각하는 자신의 MBTI는?", [
+        "INTJ", "INTP", "ENTP", "ENTJ",
+        "INFJ", "INFP", "ENFP", "ENFJ",
+        "ISTJ", "ISFJ", "ESTJ", "ESFJ",
+        "ISTP", "ISFP", "ESTP", "ESFP"
+    ])
+
+    if st.button("📤 친구 링크 생성"):
+        st.success("✅ 아래 링크를 복사해서 친구에게 보내세요!")
+        st.code(f"http://localhost:8501?name={name}&page=친구가 보는 MBTI 입력", language="text")
+        # 저장
+        pd.DataFrame({"name": [name], "mbti": [my_mbti]}).to_csv(f"{DATA_DIR}/{name}_self.csv", index=False)
+
+# 👯 Step 2: 친구가 보는 MBTI 입력
+elif page == "친구가 보는 MBTI 입력":
+    name = st.query_params.get("name", "")
+    st.title("👀 친구가 보는 MBTI 입력")
+    
+    if not name:
+        name = st.text_input("MBTI를 평가할 친구의 이름을 입력해주세요:")
+
+    if name:
+        selected = st.selectbox(f"{name}의 MBTI는 뭐라고 생각해?", [
+            "INTJ", "INTP", "ENTP", "ENTJ",
+            "INFJ", "INFP", "ENFP", "ENFJ",
+            "ISTJ", "ISFJ", "ESTJ", "ESFJ",
+            "ISTP", "ISFP", "ESTP", "ESFP"
+        ])
+        file_path = f"{DATA_DIR}/{name}_votes.csv"
+        if st.button("📩 MBTI 투표 제출"):
+            new_vote = pd.DataFrame({"MBTI": [selected]})
+            if os.path.exists(file_path):
+                df = pd.read_csv(file_path)
+                df = pd.concat([df, new_vote], ignore_index=True)
+            else:
+                df = new_vote
+            df.to_csv(file_path, index=False)
+            st.success("투표가 완료되었습니다! 🎉")
+
+# 📊 Step 3: 결과 보기
+elif page == "결과 보기":
+    st.title("📊 친구들이 보는 나의 MBTI 결과")
+
+    name = st.text_input("결과를 보고 싶은 사람의 이름은?", "")
+
+    if name:
+        self_path = f"{DATA_DIR}/{name}_self.csv"
+        vote_path = f"{DATA_DIR}/{name}_votes.csv"
+
+        if os.path.exists(self_path):
+            self_mbti = pd.read_csv(self_path).iloc[0]["mbti"]
+            st.subheader(f"🙋 나의 생각: {self_mbti}")
+        else:
+            st.warning("나의 MBTI 정보가 아직 입력되지 않았어요!")
+
+        if os.path.exists(vote_path):
+            votes = pd.read_csv(vote_path)
+            counts = votes["MBTI"].value_counts()
+            animal_emojis = ["🐶", "🐱", "🦊", "🐻", "🐼", "🐯", "🦁", "🐵", "🐷", "🐸", "🦄", "🐥"]
+            st.subheader("🗳️ 친구들이 생각하는 MBTI")
+            for i, (mbti, count) in enumerate(counts.items()):
+                emoji = animal_emojis[i % len(animal_emojis)]
+                st.markdown(f"{emoji} **{mbti}**: {count}표")
+            st.bar_chart(counts)
+        else:
+            st.info("아직 친구들의 투표가 없어요 😢")
