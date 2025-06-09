@@ -23,16 +23,15 @@ movie_recommendations = {
 st.set_page_config(page_title="MBTI 영화 추천기 🎥", page_icon="🎬")
 
 st.title("🎥 MBTI 맞춤 수학·과학 명작 영화 추천기")
-st.markdown("당신의 MBTI를 입력하면, 어울리는 영화 한 편을 추천해드릴게요! 🍿")
+st.markdown("당신의 **MBTI 유형**을 선택해보세요! 🍿")
 
-mbti_input = st.text_input("당신의 MBTI를 입력해주세요 (예: INTP)").upper()
+# 👉 selectbox로 MBTI 목록 선택
+mbti_list = list(movie_recommendations.keys())
+selected_mbti = st.selectbox("MBTI 유형 선택", mbti_list, index=mbti_list.index("INTP"))
 
 if st.button("🎬 영화 추천 받기"):
-    if mbti_input in movie_recommendations:
-        title, description = movie_recommendations[mbti_input]
-        st.balloons()  # 🎈 풍선 효과!
-        st.success(f"**🎞️ 추천 영화: {title}**\n\n{description}")
-    else:
-        st.warning("❗ 올바른 MBTI를 입력해주세요. 예: INFP, ENTJ 등")
+    title, description = movie_recommendations[selected_mbti]
+    st.balloons()  # 🎈 풍선 효과!
+    st.success(f"**🎞️ 추천 영화: {title}**\n\n{description}")
 
 st.caption("💡 참고: 이 추천은 MBTI 성향과 영화 테마를 창의적으로 매칭한 것이며, 개인의 취향과 다를 수 있어요!")
