@@ -1,37 +1,48 @@
 import streamlit as st
 
-# 🎬 MBTI에 따른 추천 영화 딕셔너리
-movie_recommendations = {
-    "INTJ": ("인터스텔라", "우주의 신비를 추적하는 시간 여행! 🚀🧠"),
-    "INTP": ("이미테이션 게임", "천재 튜링의 암호 해독 이야기! 💻🧩"),
-    "ENTP": ("마션", "화성에서 살아남기! 🔥🌌"),
-    "ENTJ": ("뷰티풀 마인드", "천재 수학자의 내면 세계를 그린 감동 실화 🎓🧮"),
-    "INFJ": ("컨택트", "언어와 시간의 경계를 넘는 감성 SF 👽🕰️"),
-    "INFP": ("빅 히어로", "로봇과 우정, 그리고 히어로! 🤖❤️"),
-    "ENFP": ("백 투 더 퓨처", "시간을 넘나드는 청춘 어드벤처! ⏳🚗"),
-    "ENFJ": ("파이 이야기", "신비로운 바다 위의 생존과 철학 🌊🐅"),
-    "ISTJ": ("굿 윌 헌팅", "숨겨진 천재성과 성장 이야기 ✍️📚"),
-    "ISFJ": ("히든 피겨스", "NASA 뒤의 숨은 영웅들 🚀💪"),
-    "ESTJ": ("소셜 네트워크", "페이스북의 창업 이야기와 전략 📱💼"),
-    "ESFJ": ("코다", "과학은 아니지만, 따뜻한 감성영화로 균형 추천 🎵🧡"),
-    "ISTP": ("인셉션", "꿈과 수학적 구조가 결합된 SF 명작 🌀🛌"),
-    "ISFP": ("월-E", "환경과 로봇의 사랑 이야기 🌍🤖"),
-    "ESTP": ("쥬라기 공원", "생명공학의 끝, 공룡의 부활! 🦖🔬"),
-    "ESFP": ("매트릭스", "현실과 가상, 선택의 수학적 구조 🕶️🔢"),
-}
+st.set_page_config(page_title="운동 추천기 🏋️", page_icon="🏃")
 
-st.set_page_config(page_title="MBTI 영화 추천기 🎥", page_icon="🎬")
+st.title("🏃‍♀️ 취향 기반 운동 추천 서비스")
+st.markdown("5단계 취향을 선택하면, 당신에게 딱 맞는 운동을 추천해드려요! 🎯")
 
-st.title("🎥 MBTI 맞춤 수학·과학 명작 영화 추천기")
-st.markdown("당신의 **MBTI 유형**을 선택해보세요! 🍿")
+# --- Step 1: 실내 vs 실외
+step1 = st.radio("1️⃣ 당신은 어디서 운동하는 걸 더 좋아하나요?", ["실내에서 운동하기 🏠", "실외에서 운동하기 🌳"])
 
-# 👉 selectbox로 MBTI 목록 선택
-mbti_list = list(movie_recommendations.keys())
-selected_mbti = st.selectbox("MBTI 유형 선택", mbti_list, index=mbti_list.index("INTP"))
+# --- Step 2: 혼자 vs 함께
+step2 = st.radio("2️⃣ 운동은 어떤 방식이 좋나요?", ["혼자 하는 운동 🤸‍♀️", "여럿이 함께 하는 운동 🧑‍🤝‍🧑"])
 
-if st.button("🎬 영화 추천 받기"):
-    title, description = movie_recommendations[selected_mbti]
-    st.balloons()  # 🎈 풍선 효과!
-    st.success(f"**🎞️ 추천 영화: {title}**\n\n{description}")
+# --- Step 3: 도구 사용 여부
+step3 = st.radio("3️⃣ 운동할 때 도구를 사용하는 걸 좋아하나요?", ["도구를 사용하는 운동 🏋️", "도구 없이 하는 운동 🧘"])
 
-st.caption("💡 참고: 이 추천은 MBTI 성향과 영화 테마를 창의적으로 매칭한 것이며, 개인의 취향과 다를 수 있어요!")
+# --- Step 4: 운동 강도
+step4 = st.radio("4️⃣ 어떤 강도의 운동을 선호하나요?", ["가벼운 강도 🌿", "중간 강도 🚶‍♂️", "강한 강도 🔥"])
+
+# --- Step 5: 운동의 목적
+step5 = st.radio("5️⃣ 운동 목적은 무엇인가요?", ["건강 관리 🫀", "스트레스 해소 🧘", "체력 향상 💪"])
+
+# 추천 로직: 간단한 규칙 기반 (조합의 일부 예시만 포함)
+def recommend_exercise():
+    if step1 == "실내에서 운동하기 🏠":
+        if step2 == "혼자 하는 운동 🤸‍♀️":
+            if step3 == "도구 없이 하는 운동 🧘":
+                return "요가 🧘‍♂️", "고요한 분위기에서 혼자 즐길 수 있는 실내 운동이에요."
+            else:
+                return "홈 트레이닝 (덤벨, 밴드 등) 🏋️", "집에서도 간편한 도구로 효율적인 운동 가능!"
+        else:
+            return "에어로빅 👯", "실내에서 다 함께 신나게 움직여보세요!"
+    else:  # 실외
+        if step2 == "혼자 하는 운동 🤸‍♀️":
+            if step3 == "도구 없이 하는 운동 🧘":
+                return "조깅 🏃‍♀️", "햇빛 받으며 혼자 달리는 조용한 시간!"
+            else:
+                return "사이클 🚴‍♂️", "도시나 공원을 달리는 상쾌한 기분!"
+        else:
+            return "축구 ⚽", "다 같이 뛰고 협동심도 기를 수 있어요!"
+
+# 버튼 클릭 시 추천
+if st.button("📌 나에게 맞는 운동 추천받기!"):
+    exercise, reason = recommend_exercise()
+    st.balloons()
+    st.success(f"🏅 추천 운동: **{exercise}**\n\n💡 {reason}")
+
+st.caption("💬 단순 규칙 기반 추천이며, 실제 운동은 자신의 건강 상태에 따라 선택하세요!")
